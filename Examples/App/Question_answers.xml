@@ -1,0 +1,67 @@
+<table name="question" description="Question">
+        <behavior name="GoatCheese">
+            <parameter name="set_menu_priority" value="1000" />
+            <parameter name="is_wysiwyg_colunms" value='["question", "explanation"]' />
+            <parameter name="with_child_tables" value='["question_answer", "question_file"]'/>
+        </behavior>
+
+        <column name="id_question" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="id_question_category" type="integer" required="true" description="Category"/>
+        <column name="question" type="longvarchar" required="false" description="Question"/>
+        <column name="explanation" type="longvarchar" required="false" description="Explanation"/>
+
+        <foreign-key foreignTable="question_category" onDelete="cascade" ><reference  local="id_question_category" foreign="id_question_category"/></foreign-key>
+    </table>
+
+    <table name="question_file" description="Image">
+        <behavior name="GoatCheese">
+            <parameter name="set_parent_table" value='question' />
+            <parameter name="set_order_list_columns" value='[["date_modification","ASC"]]' />
+            <parameter name="is_file_upload_table" value='{
+                    "thumbnail": "yes",
+                    "limit": "5",
+                    "filters" : {
+                            "max_file_size" : "20mb",
+                            "mime_types": [
+                                    {"title" : "images", "extensions" : "jpg,gif,png,jpeg"}
+                            ]
+                    },
+                    "image_support":"yes"}'
+            />
+        </behavior>
+
+        <column name="id_question_file" type="integer" required="true" primaryKey="true" autoIncrement="true" />
+        <column name="id_question" type="integer" required="true" />
+
+        <column name="ext" type="varchar" size="100" required="false" />
+        <column name="name" type="varchar" size="100" required="false" description="Name" />
+        <column name="date_modification" type="date" required="true" description="Date" />
+        <column name="file" type="varchar" size="255" required="false" />
+
+        <foreign-key foreignTable="question" onDelete="cascade" ><reference  local="id_question" foreign="id_question"/></foreign-key>
+    </table>
+
+    <table name="question_answer" description="Answer">
+        <behavior name="GoatCheese">
+            <parameter name="set_parent_table" value="question"/>
+        </behavior>
+
+        <column name="id_question_answer" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="id_question" type="integer" required="true"/>
+        <column name="answer" type="longvarchar" required="false" description="Answer"/>
+        <column name="solution"  type="enum" valueSet="No, Yes" description="Solution"/>
+        <column name="exact"  type="enum" valueSet="No, Yes" description="Exact"/>
+        <column name="order" type="integer" required="true" description="Order"/>
+
+        <foreign-key foreignTable="question" onDelete="cascade" ><reference  local="id_question" foreign="id_question"/></foreign-key>
+    </table>
+
+    <table name="question_category" description="Question category">
+        <behavior name="GoatCheese">
+            <parameter name="set_parent_menu" value="Settings"/>
+        </behavior>
+
+        <column name="id_question_category" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" size="40" required="false" description="Name"/>
+        <column name="description" type="longvarchar" required="false" description="Description"/>
+    </table>
